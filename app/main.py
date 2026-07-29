@@ -1,6 +1,13 @@
-def main():
-    print("AI Data Analyst Agent")
+from fastapi import FastAPI
+
+from app.api.routes import router
 
 
-if __name__ == "__main__":
-    main()
+app = FastAPI(
+    title="AI Data Analyst Agent",
+    description="AI assistant for analyzing uploaded datasets",
+    version="0.1.0"
+)
+
+
+app.include_router(router)
