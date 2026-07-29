@@ -15,13 +15,10 @@ def upload_file(
     file: UploadFile = File(...)
 ):
 
-    save_file(file)
-
+    file_id, file_path = save_file(file)
 
     return {
-
         "filename": file.filename,
-
-        "status": "uploaded"
-
+        "file_id": file_id,
+        "status": "uploaded",
     }
