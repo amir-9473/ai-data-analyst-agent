@@ -34,12 +34,48 @@ DEFAULT_MODEL = (
 
 
 # ==========================================================
-# LLM Function
+# Basic LLM Call
 # ==========================================================
 
 def generate_answer(
     prompt: str,
 ) -> str:
+
+    if not OPENROUTER_API_KEY:
+
+        raise ValueError(
+            "OPENROUTER_API_KEY "
+            "is not configured."
+        )
+
+    messages = [
+
+        {
+            "role": "user",
+            "content": prompt,
+        }
+
+    ]
+
+    response = chat_completion(
+        messages
+    )
+
+    return (
+        response["choices"][0]
+        ["message"]
+        ["content"]
+    )
+
+
+# ==========================================================
+# Chat Completion
+# ==========================================================
+
+def chat_completion(
+    messages: list,
+    tools: list | None = None,
+) -> dict:
 
     if not OPENROUTER_API_KEY:
 
@@ -64,15 +100,14 @@ def generate_answer(
 
         "model": DEFAULT_MODEL,
 
-        "messages": [
-
-            {
-                "role": "user",
-                "content": prompt,
-            }
-
-        ],
+        "messages": messages,
     }
+
+    if tools:
+
+        payload["tools"] = tools
+
+        payload["tool_choice"] = "auto"
 
     response = requests.post(
 
@@ -87,10 +122,4 @@ def generate_answer(
 
     response.raise_for_status()
 
-    data = response.json()
-
-    return (
-        data["choices"][0]
-        ["message"]
-        ["content"]
-    )
+    return response.json()
