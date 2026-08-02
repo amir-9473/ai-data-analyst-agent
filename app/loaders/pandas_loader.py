@@ -10,10 +10,9 @@ SUPPORTED_EXTENSIONS = {
 }
 
 
-def load_data(file_path: str | Path) -> pd.DataFrame:
-    """
-    Load a supported data file into a pandas DataFrame.
-    """
+def load_data(
+    file_path: str | Path,
+) -> pd.DataFrame:
 
     file_path = Path(file_path)
 
@@ -41,22 +40,3 @@ def load_data(file_path: str | Path) -> pd.DataFrame:
     raise ValueError(
         f"Unsupported file type: {extension}"
     )
-    
-
-def get_data_info(
-    df: pd.DataFrame,
-    file_path: str | Path,
-) -> dict:
-    """
-    Return basic metadata about a loaded dataset.
-    """
-
-    file_path = Path(file_path)
-
-    return {
-        "filename": file_path.name,
-        "file_type": file_path.suffix.lower(),
-        "rows": len(df),
-        "columns": len(df.columns),
-        "column_names": df.columns.tolist(),
-    }

@@ -7,9 +7,6 @@ UPLOAD_DIR = Path("uploads")
 
 
 def save_file(file):
-    """
-    Save an uploaded file and return its file ID and path.
-    """
 
     UPLOAD_DIR.mkdir(
         exist_ok=True
@@ -32,9 +29,14 @@ def save_file(file):
     )
 
     with file_path.open("wb") as buffer:
+
         shutil.copyfileobj(
             file.file,
             buffer
         )
 
-    return file_id, file_path
+    return {
+        "file_id": file_id,
+        "filename": file.filename,
+        "file_path": file_path,
+    }
