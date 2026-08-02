@@ -40,3 +40,24 @@ def save_file(file):
         "filename": file.filename,
         "file_path": file_path,
     }
+    
+
+
+def get_file_path(
+    file_id: str,
+) -> Path:
+
+    matches = list(
+        UPLOAD_DIR.glob(
+            f"{file_id}.*"
+        )
+    )
+
+    if not matches:
+
+        raise FileNotFoundError(
+            f"File not found: "
+            f"{file_id}"
+        )
+
+    return matches[0]
