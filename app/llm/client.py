@@ -29,7 +29,7 @@ OPENROUTER_URL = (
 )
 
 DEFAULT_MODEL = (
-    "openai/gpt-oss-20b:free"
+    "qwen/qwen3-8b"
 )
 
 
