@@ -1,0 +1,5 @@
+Metadata-Version: 2.4
+Name: ai-data-analyst-agent
+Version: 0.1.0
+Summary: AI assistant for analyzing uploaded datasets
+Requires-Python: >=3.10

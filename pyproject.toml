@@ -1,0 +1,18 @@
+[build-system]
+requires = [
+    "setuptools>=61"
+]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "ai-data-analyst-agent"
+version = "0.1.0"
+description = "AI assistant for analyzing uploaded datasets"
+requires-python = ">=3.10"
+
+
+[tool.setuptools.packages.find]
+include = [
+    "app*"
+]

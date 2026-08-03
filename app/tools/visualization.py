@@ -1,66 +1,173 @@
+# ==========================================================
+# Visualization Tool
+# ==========================================================
+
 from pathlib import Path
 
 import matplotlib.pyplot as plt
 import pandas as pd
 
 
-CHART_DIR = Path("outputs/charts")
+# ==========================================================
+# Project Paths
+# ==========================================================
 
+PROJECT_ROOT = Path(
+    __file__
+).resolve().parents[2]
+
+
+OUTPUT_DIR = (
+    PROJECT_ROOT
+    / "outputs"
+    / "charts"
+)
+
+
+# ==========================================================
+# Create Output Directory
+# ==========================================================
+
+OUTPUT_DIR.mkdir(
+    parents=True,
+    exist_ok=True,
+)
+
+
+# ==========================================================
+# Create Histogram
+# ==========================================================
 
 def create_histogram(
     df: pd.DataFrame,
-    column: str,
+    column_name: str,
 ) -> str:
 
-    if column not in df.columns:
+    """
+    Create a histogram for a numeric column.
+
+    Parameters
+    ----------
+    df:
+        Input pandas DataFrame.
+
+    column_name:
+        Name of the numeric column.
+
+    Returns
+    -------
+    str
+        Path to the generated chart.
+    """
+
+    # ------------------------------------------------------
+    # Validate Column
+    # ------------------------------------------------------
+
+    if column_name not in df.columns:
 
         raise ValueError(
-            f"Column '{column}' not found."
+            f"Column '{column_name}' "
+            "does not exist."
         )
 
+
+    # ------------------------------------------------------
+    # Validate Numeric Column
+    # ------------------------------------------------------
+
     if not pd.api.types.is_numeric_dtype(
-        df[column]
+        df[column_name]
     ):
 
         raise ValueError(
-            "Histogram requires "
-            "a numeric column."
+            f"Column '{column_name}' "
+            "is not numeric."
         )
 
-    CHART_DIR.mkdir(
-        parents=True,
-        exist_ok=True
+
+    # ------------------------------------------------------
+    # Output File Path
+    # ------------------------------------------------------
+
+    file_path = (
+
+        OUTPUT_DIR
+
+        / (
+            f"histogram_"
+            f"{column_name}.png"
+        )
+
     )
 
-    output_path = (
-        CHART_DIR
-        / f"{column}_histogram.png"
+
+    # ------------------------------------------------------
+    # Create Figure
+    # ------------------------------------------------------
+
+    plt.figure(
+        figsize=(
+            8,
+            5,
+        )
     )
 
-    plt.figure()
+
+    # ------------------------------------------------------
+    # Create Histogram
+    # ------------------------------------------------------
 
     plt.hist(
-        df[column].dropna()
+        df[column_name].dropna()
     )
 
+
+    # ------------------------------------------------------
+    # Chart Labels
+    # ------------------------------------------------------
+
     plt.title(
-        f"Distribution of {column}"
+        f"Distribution of "
+        f"{column_name}"
     )
 
     plt.xlabel(
-        column
+        column_name
     )
 
     plt.ylabel(
         "Frequency"
     )
 
+
+    # ------------------------------------------------------
+    # Layout
+    # ------------------------------------------------------
+
+    plt.tight_layout()
+
+
+    # ------------------------------------------------------
+    # Save Chart
+    # ------------------------------------------------------
+
     plt.savefig(
-        output_path
+        file_path
     )
+
+
+    # ------------------------------------------------------
+    # Close Figure
+    # ------------------------------------------------------
 
     plt.close()
 
+
+    # ------------------------------------------------------
+    # Return File Path
+    # ------------------------------------------------------
+
     return str(
-        output_path
+        file_path
     )

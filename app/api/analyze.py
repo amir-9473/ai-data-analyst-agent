@@ -1,3 +1,7 @@
+# ==========================================================
+# Analyze API
+# ==========================================================
+
 from fastapi import (
     APIRouter,
     HTTPException,
@@ -20,26 +24,53 @@ from app.services.file_service import (
 )
 
 
+# ==========================================================
+# Router
+# ==========================================================
+
 router = APIRouter(
     prefix="/analyze",
     tags=["Analysis"],
 )
 
 
+# ==========================================================
+# Analyze Dataset
+# ==========================================================
+
 @router.post("/")
 def analyze_dataset(
     request: AnalyzeRequest,
 ):
 
+    """
+    Analyze an uploaded dataset
+    using the AI data analyst agent.
+    """
+
     try:
+
+        # --------------------------------------------------
+        # Get Dataset Path
+        # --------------------------------------------------
 
         file_path = get_file_path(
             request.file_id
         )
 
+
+        # --------------------------------------------------
+        # Load Dataset
+        # --------------------------------------------------
+
         df = load_data(
             file_path
         )
+
+
+        # --------------------------------------------------
+        # Run Agent
+        # --------------------------------------------------
 
         answer = run_agent(
 
@@ -47,6 +78,19 @@ def analyze_dataset(
 
             question=request.question,
         )
+        
+        print(type(answer))
+        print(repr(answer))
+        
+        print(
+            "DEBUG ANSWER:",
+            repr(answer),
+        )
+
+
+        # --------------------------------------------------
+        # Return Response
+        # --------------------------------------------------
 
         return {
 
@@ -59,7 +103,9 @@ def analyze_dataset(
             ),
 
             "answer": answer,
+
         }
+
 
     except FileNotFoundError:
 
@@ -71,7 +117,9 @@ def analyze_dataset(
                 "Dataset file "
                 "not found."
             ),
+
         )
+
 
     except Exception as e:
 
@@ -80,4 +128,5 @@ def analyze_dataset(
             status_code=500,
 
             detail=str(e),
+
         )
