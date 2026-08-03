@@ -32,6 +32,9 @@ from app.tools.dataset_info import (
     column_information,
 )
 
+from app.schemas.agent_schema import (
+    AgentResponse,
+)
 
 # ==========================================================
 # Tool Definitions
@@ -640,7 +643,81 @@ def run_agent(
     # Return Final Answer
     # ------------------------------------------------------
 
-    return (
+    final_message = (
+        final_response["choices"][0]
+        ["message"]
+    )
+
+
+    content = (
+        final_message.get(
+            "content"
+        )
+    )
+
+
+    # ------------------------------------------------------
+    # Chart Result
+    # ------------------------------------------------------
+
+    if isinstance(
+        tool_result,
+        dict
+    ):
+
+        if (
+            tool_result.get("type")
+            ==
+            "chart"
+        ):
+
+            return AgentResponse(
+
+                type="chart",
+
+                answer=(
+
+                    tool_result.get(
+                        "message",
+                        "Chart created."
+                    )
+
+                ),
+
+                chart_path=(
+
+                    tool_result.get(
+                        "chart_path"
+                    )
+
+                ),
+
+            )
+
+
+    # ------------------------------------------------------
+    # Text Result
+    # ------------------------------------------------------
+
+    return AgentResponse(
+
+        type="text",
+
+        answer=(
+
+            content
+            or
+            "Analysis completed."
+
+        ),
+
+    )
+
+
+
+
+
+'''    return (
 
         final_response["choices"][0]
 
@@ -648,4 +725,4 @@ def run_agent(
 
         ["content"]
 
-    )
+    )'''

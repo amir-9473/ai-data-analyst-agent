@@ -23,6 +23,15 @@ from app.services.file_service import (
     get_file_path,
 )
 
+from app.schemas.agent_schema import (
+    AgentResponse,
+)
+
+from app.schemas.analysis_schema import (
+    AnalyzeRequest,
+    AnalyzeResponse,
+)
+
 
 # ==========================================================
 # Router
@@ -38,9 +47,20 @@ router = APIRouter(
 # Analyze Dataset
 # ==========================================================
 
+'''@router.post(
+    "/",
+    response_model=AgentResponse,
+)
+
+@router.post(
+    "/",
+    response_model=AnalyzeResponse,
+)'''
+
 @router.post("/")
 def analyze_dataset(
     request: AnalyzeRequest,
+    response_model=AnalyzeResponse,
 ):
 
     """
@@ -94,15 +114,11 @@ def analyze_dataset(
 
         return {
 
-            "file_id": (
-                request.file_id
-            ),
+            "file_id": request.file_id,
 
-            "question": (
-                request.question
-            ),
+            "question": request.question,
 
-            "answer": answer,
+            **answer.model_dump(),
 
         }
 
