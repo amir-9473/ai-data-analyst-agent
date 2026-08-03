@@ -28,8 +28,9 @@ OPENROUTER_URL = (
     "https://openrouter.ai/api/v1/chat/completions"
 )
 
-DEFAULT_MODEL = (
-    "qwen/qwen3-8b"
+DEFAULT_MODEL = os.getenv(
+    "LLM_MODEL",
+    "openai/gpt-oss-20b:free"
 )
 
 

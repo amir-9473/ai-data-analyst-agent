@@ -1,19 +1,26 @@
 # Python
+
 __pycache__/
-*.py[cod]
+*.pyc
 
-# Virtual Environment
-venv/
+
+# Environment
+
 .env
+.venv/
 
-# Jupyter
-.ipynb_checkpoints/
 
 # Data
-uploads/*
-*.csv
-*.xlsx
+
+uploads/
+outputs/
+
+
+# Streamlit
+
+.streamlit/
+
 
 # OS
+
 .DS_Store
-Thumbs.db

@@ -1,6 +1,12 @@
 # ==========================================================
 # FastAPI Client
 # ==========================================================
+import os
+
+from dotenv import load_dotenv
+
+
+load_dotenv()
 
 import requests
 
@@ -9,7 +15,8 @@ import requests
 # Configuration
 # ==========================================================
 
-API_URL = (
+API_URL = os.getenv(
+    "API_URL",
     "http://127.0.0.1:8000"
 )
 
