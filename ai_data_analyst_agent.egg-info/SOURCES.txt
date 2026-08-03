@@ -15,6 +15,7 @@ app/api/profile.py
 app/api/routes.py
 app/api/upload.py
 app/core/__init__.py
+app/core/config.py
 app/llm/__init__.py
 app/llm/client.py
 app/loaders/__init__.py
@@ -22,6 +23,7 @@ app/loaders/pandas_loader.py
 app/profiling/__init__.py
 app/profiling/profile_schema.py
 app/profiling/profiler.py
+app/schemas/agent_schema.py
 app/schemas/analysis_schema.py
 app/schemas/dataset_schema.py
 app/schemas/file_schema.py
@@ -29,8 +31,10 @@ app/schemas/profile_schema.py
 app/services/analysis_service.py
 app/services/file_service.py
 app/tools/correlation.py
+app/tools/dataset_info.py
 app/tools/missing_values.py
 app/tools/statistics.py
 app/tools/visualization.py
 app/tools/visualization2.py
+tests/test_api_client.py
 tests/test_health.py
