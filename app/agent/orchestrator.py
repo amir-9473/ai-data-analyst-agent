@@ -26,6 +26,12 @@ from app.tools.visualization import (
     create_histogram,
 )
 
+from app.tools.dataset_info import (
+    list_columns,
+    dataset_overview,
+    column_information,
+)
+
 
 # ==========================================================
 # Tool Definitions
@@ -33,6 +39,89 @@ from app.tools.visualization import (
 
 TOOLS = [
 
+
+{
+    "type": "function",
+
+    "function": {
+
+        "name": "list_columns",
+
+        "description": (
+            "Return all column names "
+            "available in the dataset."
+        ),
+
+        "parameters": {
+
+            "type": "object",
+
+            "properties": {},
+        },
+    },
+},
+
+
+
+{
+    "type": "function",
+
+    "function": {
+
+        "name": "dataset_overview",
+
+        "description": (
+            "Return basic information "
+            "about dataset size "
+            "including rows and columns."
+        ),
+
+        "parameters": {
+
+            "type": "object",
+
+            "properties": {},
+        },
+    },
+},
+
+
+{
+    "type": "function",
+
+    "function": {
+
+        "name": "column_information",
+
+        "description": (
+            "Return detailed information "
+            "about a specific column."
+        ),
+
+        "parameters": {
+
+            "type": "object",
+
+            "properties": {
+
+                "column_name": {
+
+                    "type": "string",
+
+                    "description": (
+                        "Column name "
+                        "to inspect."
+                    ),
+                },
+
+            },
+
+            "required": [
+                "column_name"
+            ],
+        },
+    },
+},
     # ------------------------------------------------------
     # Statistics Tool
     # ------------------------------------------------------
@@ -240,6 +329,33 @@ def execute_tool(
         )
 
 
+    if tool_name == "list_columns":
+
+        return list_columns(
+            df
+        )
+
+
+
+    if tool_name == "dataset_overview":
+
+        return dataset_overview(
+            df
+        )
+
+
+    if tool_name == "column_information":
+
+        column_name = arguments.get(
+            "column_name"
+        )
+
+        return column_information(
+            df=df,
+            column_name=column_name,
+        )
+
+
     # ------------------------------------------------------
     # Visualization
     # ------------------------------------------------------
@@ -425,6 +541,15 @@ def run_agent(
     )
 
 
+
+    tool_arguments = json.loads(
+
+        tool_call["function"]
+        ["arguments"]
+
+)
+
+
     # ------------------------------------------------------
     # Extract Tool Arguments
     # ------------------------------------------------------
@@ -459,7 +584,7 @@ def run_agent(
 
         df=df,
 
-        arguments=arguments,
+        arguments=tool_arguments,
     )
 
 
