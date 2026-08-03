@@ -120,6 +120,14 @@ def chat_completion(
         timeout=60,
     )
 
+    if response.status_code == 429:
+
+        raise Exception(
+            "LLM rate limit reached. "
+            "Please wait and try again."
+        )
+
+
     response.raise_for_status()
 
     return response.json()

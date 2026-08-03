@@ -89,10 +89,19 @@ def analyze_dataset(
 
         timeout=120,
 
-    )
+)
 
 
-    response.raise_for_status()
+    if response.status_code != 200:
+
+        print(
+            "API ERROR:",
+            response.text
+        )
+
+        raise Exception(
+            response.text
+        )
 
 
     return response.json()
