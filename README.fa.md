@@ -34,24 +34,6 @@ Copy-Item .env.example .env
 http://127.0.0.1:8000/docs
 ```
 
-## انتشار رایگان در وب
-
-برنامهٔ Streamlit در یک فرایند اجرا می‌شود و برای دموی عمومی به backend جداگانه نیاز ندارد:
-
-1. پروژه را در GitHub قرار دهید.
-2. در [Streamlit Community Cloud](https://share.streamlit.io) یک App بسازید.
-3. branch و فایل `streamlit_app.py` را انتخاب کنید.
-4. در بخش Secrets مقادیر زیر را وارد کنید:
-
-```toml
-OPENROUTER_API_KEY = "کلید-جدید-شما"
-LLM_MODEL = "qwen/qwen3-8b"
-```
-
-5. Deploy را بزنید و لینک HTTPS ساخته‌شده را به اشتراک بگذارید.
-
-هرگز کلید واقعی را در GitHub یا فایل `.env.example` commit نکنید.
-
 ## نمونه درخواست
 
 ```text

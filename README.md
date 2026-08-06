@@ -29,21 +29,6 @@ Copy-Item .env.example .env
 
 `run_app.bat` performs the last command on Windows. The optional FastAPI interface remains available with `run_backend.bat` and exposes interactive docs at `http://127.0.0.1:8000/docs`.
 
-## Publish a free web demo
-
-The Streamlit app reads and analyzes files in one process, so the public demo needs no separate backend, VM, or paid host:
-
-1. Push this repository to GitHub.
-2. In [Streamlit Community Cloud](https://share.streamlit.io), create an app and select `streamlit_app.py` as the entry point.
-3. Add these values under **Advanced settings > Secrets**:
-
-```toml
-OPENROUTER_API_KEY = "your-openrouter-key"
-LLM_MODEL = "qwen/qwen3-8b"
-```
-
-4. Deploy and share the generated HTTPS URL. Never commit the real key.
-
 ## Example request
 
 > Describe age, detect its outliers, create a histogram and a box plot, and then analyze the relationship between age and BMI.
