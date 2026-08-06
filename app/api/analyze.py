@@ -1,148 +1,22 @@
-# ==========================================================
-# Analyze API
-# ==========================================================
+from fastapi import APIRouter, HTTPException
 
-from fastapi import (
-    APIRouter,
-    HTTPException,
-)
-
-from app.agent.orchestrator import (
-    run_agent,
-)
-
-from app.loaders.pandas_loader import (
-    load_data,
-)
-
-from app.schemas.analysis_schema import (
-    AnalyzeRequest,
-)
-
-from app.services.file_service import (
-    get_file_path,
-)
-
-from app.schemas.agent_schema import (
-    AgentResponse,
-)
-
-from app.schemas.analysis_schema import (
-    AnalyzeRequest,
-    AnalyzeResponse,
-)
+from app.agent.orchestrator import run_agent
+from app.loaders.pandas_loader import load_data
+from app.schemas.analysis_schema import AnalyzeRequest, AnalyzeResponse
+from app.services.file_service import get_file_path
 
 
-# ==========================================================
-# Router
-# ==========================================================
-
-router = APIRouter(
-    prefix="/analyze",
-    tags=["Analysis"],
-)
+router = APIRouter(prefix="/analyze", tags=["Analysis"])
 
 
-# ==========================================================
-# Analyze Dataset
-# ==========================================================
-
-'''@router.post(
-    "/",
-    response_model=AgentResponse,
-)
-
-@router.post(
-    "/",
-    response_model=AnalyzeResponse,
-)'''
-
-@router.post("/")
-def analyze_dataset(
-    request: AnalyzeRequest,
-    response_model=AnalyzeResponse,
-):
-
-    """
-    Analyze an uploaded dataset
-    using the AI data analyst agent.
-    """
-
+@router.post("/", response_model=AnalyzeResponse)
+def analyze_dataset(request: AnalyzeRequest):
     try:
-
-        # --------------------------------------------------
-        # Get Dataset Path
-        # --------------------------------------------------
-
-        file_path = get_file_path(
-            request.file_id
-        )
-
-
-        # --------------------------------------------------
-        # Load Dataset
-        # --------------------------------------------------
-
-        df = load_data(
-            file_path
-        )
-
-
-        # --------------------------------------------------
-        # Run Agent
-        # --------------------------------------------------
-
-        answer = run_agent(
-
-            df=df,
-
-            question=request.question,
-        )
-        
-        print(type(answer))
-        print(repr(answer))
-        
-        print(
-            "DEBUG ANSWER:",
-            repr(answer),
-        )
-
-
-        # --------------------------------------------------
-        # Return Response
-        # --------------------------------------------------
-
-        return {
-
-            "file_id": request.file_id,
-
-            "question": request.question,
-
-            **answer.model_dump(),
-
-        }
-
-
-    except FileNotFoundError:
-
-        raise HTTPException(
-
-            status_code=404,
-
-            detail=(
-                "Dataset file "
-                "not found."
-            ),
-
-        )
-
-
-    except Exception as e:
-
-        raise HTTPException(
-
-            status_code=500,
-
-            detail=str(e),
-
-        )
+        result = run_agent(load_data(get_file_path(request.file_id)), request.question)
+        return {"file_id": request.file_id, "question": request.question, **result.model_dump()}
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail="Dataset file not found.") from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc

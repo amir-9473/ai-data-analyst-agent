@@ -1,21 +1,14 @@
-# ==========================================================
-# Agent Response Schema
-# ==========================================================
-
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
-class AgentResponse(
-    BaseModel
-):
-
-    """
-    Standard response format
-    for AI Data Analyst Agent.
-    """
-
+class ChartResult(BaseModel):
     type: str
+    title: str
+    path: str
 
+
+class AgentResponse(BaseModel):
+    type: str
     answer: str
-
+    charts: list[ChartResult] = Field(default_factory=list)
     chart_path: str | None = None

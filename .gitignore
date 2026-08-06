@@ -1,26 +1,12 @@
-# Python
-
 __pycache__/
-*.pyc
-
-
-# Environment
-
-.env
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
 .venv/
-
-
-# Data
-
+.env
+.streamlit/secrets.toml
 uploads/
 outputs/
-
-
-# Streamlit
-
-.streamlit/
-
-
-# OS
-
 .DS_Store
+Thumbs.db
