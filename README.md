@@ -1,5 +1,7 @@
 # AI Data Analyst Agent
 
+[English](README.md) | [فارسی](README.fa.md)
+
 A compact multilingual agent that reads CSV, Excel, or JSON files, understands multi-part questions in Persian or English, runs statistical tools, and returns Markdown plus charts.
 
 ## What it can do
@@ -29,7 +31,7 @@ The Streamlit app reads and analyzes files in one process, so the public demo ne
 
 1. Push this repository to GitHub.
 2. In [Streamlit Community Cloud](https://share.streamlit.io), create an app and select `streamlit_app.py` as the entry point.
-3. Add these values under **Advanced settings → Secrets**:
+3. Add these values under **Advanced settings > Secrets**:
 
 ```toml
 OPENROUTER_API_KEY = "your-openrouter-key"
