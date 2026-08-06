@@ -2,6 +2,10 @@
 
 [English](README.md) | [فارسی](README.fa.md)
 
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://da-agent.streamlit.app/)
+
+**Live demo:** [da-agent.streamlit.app](https://da-agent.streamlit.app/)
+
 A compact multilingual agent that reads CSV, Excel, or JSON files, understands multi-part questions in Persian or English, runs statistical tools, and returns Markdown plus charts.
 
 ## What it can do

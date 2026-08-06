@@ -2,6 +2,10 @@
 
 [English](README.md) | [فارسی](README.fa.md)
 
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://da-agent.streamlit.app/)
+
+**نسخه آنلاین:** [da-agent.streamlit.app](https://da-agent.streamlit.app/)
+
 یک ایجنت چندزبانه برای خواندن فایل‌های CSV، Excel و JSON، درک درخواست‌های چندبخشی فارسی یا انگلیسی، اجرای تحلیل‌های آماری و تولید نمودار.
 
 ## قابلیت‌ها
