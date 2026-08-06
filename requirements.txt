@@ -1,0 +1,13 @@
+arabic-reshaper>=3.0
+bleach>=6.2
+fastapi>=0.110
+Markdown>=3.7
+matplotlib>=3.8
+openpyxl>=3.1
+pandas>=2.2
+python-bidi>=0.6
+python-dotenv>=1.0
+python-multipart>=0.0.9
+requests>=2.31
+streamlit>=1.40
+uvicorn>=0.29
