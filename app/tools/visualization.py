@@ -10,11 +10,18 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from matplotlib import font_manager
 
 from app.tools.analysis import resolve_column
 
 
 CHART_DIR = Path(__file__).resolve().parents[2] / "outputs" / "charts"
+FONT_PATH = Path(__file__).resolve().parents[2] / "assets" / "fonts" / "Vazirmatn-Regular.ttf"
+if FONT_PATH.exists():
+    font_manager.fontManager.addfont(FONT_PATH)
+    FONT_FAMILY = font_manager.FontProperties(fname=FONT_PATH).get_name()
+else:  # pragma: no cover - the bundled font is expected in packaged builds
+    FONT_FAMILY = "DejaVu Sans"
 
 
 def _display(text: object) -> str:
@@ -34,6 +41,15 @@ def _label(axis, *, title: str, x: str = "", y: str = "") -> None:
     axis.set_title(_display(title))
     axis.set_xlabel(_display(x))
     axis.set_ylabel(_display(y))
+
+
+def _apply_font(axis) -> None:
+    # Matplotlib needs an explicit Arabic-capable font for Persian labels.
+    texts = [axis.title, axis.xaxis.label, axis.yaxis.label, *axis.get_xticklabels(), *axis.get_yticklabels(), *axis.texts]
+    if legend := axis.get_legend():
+        texts.extend([legend.get_title(), *legend.get_texts()])
+    for text in texts:
+        text.set_fontfamily(FONT_FAMILY)
 
 
 def create_chart(
@@ -127,6 +143,7 @@ def create_chart(
 
     if chart_type not in {"pie", "correlation"}:
         axis.grid(alpha=0.18)
+    _apply_font(axis)
     figure.tight_layout()
     CHART_DIR.mkdir(parents=True, exist_ok=True)
     path = CHART_DIR / f"{chart_type}_{uuid4().hex[:10]}.png"

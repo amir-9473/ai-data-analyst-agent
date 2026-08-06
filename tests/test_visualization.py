@@ -35,3 +35,8 @@ def test_all_chart_types(tmp_path, monkeypatch, frame, chart_type, arguments):
 
     assert result["chart_type"] == chart_type
     assert Path(result["path"]).is_file()
+
+
+def test_vazirmatn_font_is_available_for_chart_labels():
+    assert visualization.FONT_PATH.is_file()
+    assert visualization.FONT_FAMILY == "Vazirmatn"

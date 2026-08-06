@@ -58,6 +58,7 @@ def load_data(source: str | Path | object) -> pd.DataFrame:
         frame = pd.read_json(BytesIO(content))
 
     frame.columns = [str(column).strip() for column in frame.columns]
+    # Remove index columns accidentally exported by pandas or spreadsheet tools.
     generated_indexes = [
         column
         for column in frame.columns

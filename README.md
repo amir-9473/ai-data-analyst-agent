@@ -40,9 +40,9 @@ LLM_MODEL = "qwen/qwen3-8b"
 
 ## Example request
 
-> سن را توصیف کن، داده‌های پرت را بررسی کن و هیستوگرام و نمودار جعبه‌ای بساز. بعد رابطهٔ سن و BMI را هم تحلیل کن.
+> Describe age, detect its outliers, create a histogram and a box plot, and then analyze the relationship between age and BMI.
 
-The model receives the real schema first, maps concepts such as `سن` to `Age`, executes every required tool, and summarizes the results in Persian Markdown.
+The model receives the real schema first, maps informal or translated concepts to actual column names, executes every required tool, and summarizes the results in the user's language.
 
 ## Project layout
 
@@ -64,3 +64,5 @@ tests/
 ```
 
 Tests cover Persian file loading, fuzzy/semantic column matching, all analysis modes, all chart types, multiple tool calls, the API health endpoint, and Streamlit startup.
+
+The bundled [Vazirmatn](https://github.com/rastikerdar/vazirmatn) font is distributed under the SIL Open Font License 1.1; its license is included in `assets/fonts/OFL.txt`.

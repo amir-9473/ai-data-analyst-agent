@@ -104,7 +104,7 @@ Rules:
 
 
 def _response(answer: str | None, charts: list[ChartResult]) -> AgentResponse:
-    text = (answer or "Analysis completed. / تحلیل انجام شد.").strip()
+    text = (answer or "Analysis completed.").strip()
     response_type = "mixed" if charts and answer else "chart" if charts else "text"
     return AgentResponse(
         type=response_type,
@@ -139,6 +139,7 @@ def run_agent(
         message = complete(messages=messages, tools=TOOLS)["choices"][0]["message"]
         tool_calls = message.get("tool_calls") or []
         if not tool_calls:
+            # Retry an initial answer that ignored the dataset tools.
             if not used_tool:
                 messages.extend(
                     [

@@ -7,30 +7,13 @@ import streamlit as st
 from app.agent.orchestrator import run_agent
 from app.loaders.pandas_loader import load_data
 from app.profiling.profiler import profile_dataset
+from app.ui import page_css, render_markdown
 
 
 st.set_page_config(page_title="AI Data Analyst", page_icon="📊", layout="wide")
-st.markdown(
-    """
-    <style>
-    [data-testid="stMarkdownContainer"] p,
-    [data-testid="stMarkdownContainer"] li,
-    [data-testid="stMarkdownContainer"] h1,
-    [data-testid="stMarkdownContainer"] h2,
-    [data-testid="stMarkdownContainer"] h3,
-    [data-testid="stMarkdownContainer"] td,
-    [data-testid="stMarkdownContainer"] th,
-    input, textarea {
-        unicode-bidi: plaintext;
-        text-align: start;
-    }
-    [data-testid="stFileUploader"] {direction: auto;}
-    .stApp {font-family: Tahoma, "Segoe UI", sans-serif;}
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+st.markdown(page_css(), unsafe_allow_html=True)
 
+# Cloud secrets override local .env values when the app is deployed.
 try:
     if key := st.secrets.get("OPENROUTER_API_KEY"):
         os.environ["OPENROUTER_API_KEY"] = key
@@ -39,53 +22,69 @@ try:
 except FileNotFoundError:
     pass
 
-st.title("📊 دستیار هوشمند تحلیل داده | AI Data Analyst")
-st.caption("فایل را بارگذاری کنید و سؤال‌های چندبخشی را به فارسی یا انگلیسی بپرسید.")
+st.markdown('<div class="app-eyebrow">MULTILINGUAL DATA WORKSPACE</div>', unsafe_allow_html=True)
+st.title("AI Data Analyst")
+st.caption("Upload a dataset, ask a multi-part question in Persian or English, and receive evidence-based analysis.")
 
-uploaded = st.file_uploader("CSV، Excel یا JSON", type=["csv", "xlsx", "json"])
+with st.container(border=True):
+    st.subheader("1. Upload a dataset")
+    uploaded = st.file_uploader("Choose a CSV, Excel, or JSON file", type=["csv", "xlsx", "json"])
+
 if uploaded:
     signature = (uploaded.name, uploaded.size)
     if st.session_state.get("file_signature") != signature:
         try:
+            # A new upload invalidates the previous analysis result.
             st.session_state.dataset = load_data(uploaded)
             st.session_state.file_signature = signature
             st.session_state.result = None
         except Exception as exc:
-            st.error(f"خطا در خواندن فایل / Could not read file: {exc}")
+            st.error(f"Could not read the file: {exc}")
+elif st.session_state.get("file_signature"):
+    for key in ("dataset", "file_signature", "result"):
+        st.session_state.pop(key, None)
 
 if "dataset" in st.session_state:
     frame = st.session_state.dataset
     profile = profile_dataset(frame)
-    left, right = st.columns([2, 1])
-    with left:
-        st.subheader("پیش‌نمایش داده | Data preview")
-        st.dataframe(frame.head(20), width="stretch")
-    with right:
-        st.subheader("خلاصه | Overview")
-        st.metric("Rows", profile["rows"])
-        st.metric("Columns", profile["columns"])
-        st.metric("Missing cells", sum(profile["missing_values"].values()))
 
-    question = st.text_area(
-        "درخواست تحلیل | Analysis request",
-        placeholder="مثال: توزیع سن را تحلیل کن، نقاط پرت را بگو و هیستوگرام و نمودار جعبه‌ای بکش.",
-        height=100,
-    )
-    if st.button("تحلیل کن | Analyze", type="primary", disabled=not question.strip()):
+    with st.container(border=True):
+        st.subheader("Dataset overview")
+        metrics = st.columns(4)
+        metrics[0].metric("Rows", profile["rows"])
+        metrics[1].metric("Columns", profile["columns"])
+        metrics[2].metric("Missing cells", sum(profile["missing_values"].values()))
+        metrics[3].metric("Duplicate rows", profile["duplicate_rows"])
+        with st.expander("Preview the first 20 rows", expanded=True):
+            st.dataframe(frame.head(20), width="stretch")
+
+    with st.container(border=True):
+        st.subheader("2. Ask for an analysis")
+        st.caption("You can request several statistics and charts in the same message.")
+        question = st.text_area(
+            "Analysis request",
+            placeholder="Example: Describe age, detect its outliers, and create both a histogram and a box plot.",
+            height=110,
+        )
+        analyze = st.button("Run analysis", type="primary", disabled=not question.strip())
+
+    if analyze:
         try:
-            with st.spinner("در حال تحلیل... | Analyzing..."):
+            with st.spinner("Analyzing the dataset..."):
                 st.session_state.result = run_agent(frame, question)
         except Exception as exc:
-            st.error(f"تحلیل انجام نشد / Analysis failed: {exc}")
+            st.error(f"Analysis failed: {exc}")
 
     if result := st.session_state.get("result"):
-        st.divider()
-        st.subheader("نتیجه | Result")
-        st.markdown(result.answer)
-        if result.charts:
-            columns = st.columns(min(2, len(result.charts)))
-            for index, chart in enumerate(result.charts):
-                with columns[index % len(columns)]:
-                    st.image(chart.path, caption=chart.title, width="stretch")
+        with st.container(border=True):
+            st.subheader("3. Analysis result")
+            # Each rendered Markdown block gets its own automatic text direction.
+            st.markdown(render_markdown(result.answer), unsafe_allow_html=True)
+            if result.charts:
+                st.subheader("Visualizations")
+                tabs = st.tabs([f"{index + 1}. {chart.type.title()}" for index, chart in enumerate(result.charts)])
+                for tab, chart in zip(tabs, result.charts):
+                    with tab:
+                        st.image(chart.path, caption=chart.title, width="stretch")
 else:
-    st.info("برای شروع یک فایل انتخاب کنید. | Upload a dataset to begin.")
+    st.info("Upload a dataset to unlock the analysis workspace.")

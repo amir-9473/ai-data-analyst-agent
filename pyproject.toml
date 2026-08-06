@@ -9,7 +9,9 @@ description = "Multilingual AI assistant for analyzing uploaded datasets"
 requires-python = ">=3.10"
 dependencies = [
     "arabic-reshaper>=3.0",
+    "bleach>=6.2",
     "fastapi>=0.110",
+    "Markdown>=3.7",
     "matplotlib>=3.8",
     "openpyxl>=3.1",
     "pandas>=2.2",
