@@ -1,26 +1,13 @@
 from pydantic import BaseModel
 
+from app.schemas.agent_schema import AgentResponse
 
-class AnalyzeRequest(
-    BaseModel
-):
 
+class AnalyzeRequest(BaseModel):
     file_id: str
-
     question: str
 
 
-
-class AnalyzeResponse(
-    BaseModel
-):
-
+class AnalyzeResponse(AgentResponse):
     file_id: str
-
     question: str
-
-    type: str
-
-    answer: str
-
-    chart_path: str | None = None

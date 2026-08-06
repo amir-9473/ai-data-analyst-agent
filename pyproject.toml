@@ -1,18 +1,28 @@
 [build-system]
-requires = [
-    "setuptools>=61"
-]
+requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
-
 
 [project]
 name = "ai-data-analyst-agent"
-version = "0.1.0"
-description = "AI assistant for analyzing uploaded datasets"
+version = "0.2.0"
+description = "Multilingual AI assistant for analyzing uploaded datasets"
 requires-python = ">=3.10"
+dependencies = [
+    "arabic-reshaper>=3.0",
+    "fastapi>=0.110",
+    "matplotlib>=3.8",
+    "openpyxl>=3.1",
+    "pandas>=2.2",
+    "python-bidi>=0.6",
+    "python-dotenv>=1.0",
+    "python-multipart>=0.0.9",
+    "requests>=2.31",
+    "streamlit>=1.40",
+    "uvicorn>=0.29",
+]
 
+[project.optional-dependencies]
+dev = ["httpx>=0.27", "pytest>=8"]
 
 [tool.setuptools.packages.find]
-include = [
-    "app*"
-]
+include = ["app*"]
