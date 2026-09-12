@@ -16,7 +16,7 @@ def test_loads_persian_csv_with_unusual_delimiter():
     assert frame.shape == (2, 2)
 
 
-def test_loads_the_existing_uploaded_samples():
-    samples = list(Path("uploads").glob("*.csv"))
+def test_loads_the_versioned_csv_fixtures():
+    samples = list((Path(__file__).parent / "fixtures").glob("*.csv"))
     assert samples
     assert all(not load_data(path).empty for path in samples)
