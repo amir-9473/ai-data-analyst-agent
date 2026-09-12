@@ -17,6 +17,7 @@ RUN python -m pip install --no-cache-dir --upgrade pip \
 COPY pyproject.toml streamlit_app.py ./
 COPY app ./app
 COPY assets ./assets
+COPY .streamlit ./.streamlit
 
 RUN groupadd --system app \
     && useradd --system --gid app --create-home app \

@@ -21,3 +21,11 @@ def test_markdown_is_sanitized_and_font_is_bundled():
     assert FONT_PATH.is_file()
     assert 'font-family: "Vazirmatn"' in css
     assert ':dir(rtl)' in css
+
+
+def test_page_css_keeps_streamlit_shell_light_and_responsive():
+    css = page_css()
+
+    assert '[data-testid="stHeader"]' in css
+    assert '[data-testid="stAppViewContainer"]' in css
+    assert "@media (max-width: 768px)" in css

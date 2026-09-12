@@ -58,10 +58,18 @@ def page_css() -> str:
         --muted: #64748b;
         --accent: #2563eb;
     }}
-    .stApp {{
+    html, body, .stApp, [data-testid="stAppViewContainer"], [data-testid="stMain"] {{
         background: linear-gradient(180deg, #f5f8ff 0, #ffffff 22rem);
         color: var(--ink);
         font-family: Inter, "Segoe UI", sans-serif;
+    }}
+    [data-testid="stHeader"] {{
+        background: rgba(245, 248, 255, .92);
+        color: var(--ink);
+        backdrop-filter: blur(10px);
+    }}
+    [data-testid="stToolbar"], [data-testid="stDecoration"] {{
+        color: var(--ink);
     }}
     .block-container {{max-width: 1180px; padding-top: 2.5rem; padding-bottom: 4rem;}}
     .app-eyebrow {{
@@ -122,6 +130,11 @@ def page_css() -> str:
     .analysis-output h1, .analysis-output h2, .analysis-output h3 {{margin-top: 1.2rem;}}
     .analysis-output > :first-child {{margin-top: 0;}}
     .analysis-output > :last-child {{margin-bottom: 0;}}
+    @media (max-width: 768px) {{
+        .block-container {{padding: 1.5rem 1rem 3rem;}}
+        [data-testid="stHorizontalBlock"] {{gap: .75rem;}}
+        [data-testid="stMetric"] {{padding: .7rem .8rem;}}
+    }}
     </style>
     """
 
