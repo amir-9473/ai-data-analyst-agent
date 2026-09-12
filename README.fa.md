@@ -1,8 +1,12 @@
 # دستیار تحلیل داده با هوش مصنوعی
 
-[English](README.md) | [فارسی](README.fa.md)
+[English](README.md) | [فارسی](README.fa.md) | [دموی آنلاین](http://82.22.175.58:8080/)
 
 یک ایجنت چندزبانه برای خواندن فایل‌های CSV، Excel و JSON، درک درخواست‌های چندبخشی فارسی یا انگلیسی، اجرای تحلیل‌های آماری و تولید نمودار.
+
+## دموی آنلاین
+
+**[اجرای دستیار تحلیل داده](http://82.22.175.58:8080/)**
 
 ## قابلیت‌ها
 
@@ -78,3 +82,67 @@ tests/
 تست‌ها بارگذاری فایل فارسی، تطبیق مفهومی ستون، روش‌های تحلیل، انواع نمودار، اجرای چند tool call، endpoint سلامت API و شروع Streamlit را پوشش می‌دهند.
 
 فونت bundle‌شدهٔ [Vazirmatn](https://github.com/rastikerdar/vazirmatn) تحت مجوز SIL Open Font License 1.1 منتشر شده و متن مجوز آن در `assets/fonts/OFL.txt` قرار دارد.
+
+## استقرار با Docker
+
+پیش‌نیازهای میزبان فقط Docker Engine و Docker Compose نسخهٔ ۲ هستند. برنامه داخل کانتینر با کاربر غیر root روی پورت `8501` اجرا می‌شود و فایل‌های بارگذاری‌شده و نمودارها در volumeهای Docker نگهداری می‌شوند.
+
+فایل تنظیمات خصوصی را از نمونه بسازید و کلید لازم را در آن قرار دهید:
+
+```bash
+cp .env.example .env
+chmod 600 .env
+```
+
+متغیر `OPENROUTER_API_KEY` برای تحلیل مبتنی بر هوش مصنوعی الزامی است. متغیرهای `LLM_MODEL`، `SITE_ADDRESS`، `PUBLIC_HTTP_PORT` و `STREAMLIT_HOST_PORT` قابل تنظیم‌اند. فایل `.env`، کلید API، رمز عبور، secretهای Streamlit و کلید خصوصی certificate نباید commit شوند.
+
+ساخت و اجرای برنامه و Reverse Proxy مبتنی بر Caddy:
+
+```bash
+docker compose build
+docker compose up -d
+docker compose ps
+docker compose logs -f
+```
+
+بررسی سلامت Streamlit از اتصال خصوصی میزبان و توقف سرویس:
+
+```bash
+curl http://127.0.0.1:8601/_stcore/health
+docker compose down
+```
+
+هر دو سرویس از `restart: unless-stopped` استفاده می‌کنند؛ بنابراین در صورت فعال‌بودن Docker service، پس از restart سرور دوباره اجرا می‌شوند، مگر اینکه قبلاً دستی متوقف شده باشند.
+
+## استقرار روی VPS
+
+معماری استقرار به‌شکل زیر است:
+
+```text
+Internet
+  -> Caddy / Reverse Proxy (:8080)
+  -> Docker network
+  -> Streamlit (:8501)
+  -> Data Analyst Agent
+```
+
+نسخهٔ فعلی روی VPS از آدرس **[http://82.22.175.58:8080/](http://82.22.175.58:8080/)** در دسترس است. در سرور دیگر، IP را جایگزین کنید و برای هر پروژه `PUBLIC_HTTP_PORT` و `STREAMLIT_HOST_PORT` متفاوتی در فایل خصوصی `.env` در نظر بگیرید. پورت داخلی Streamlit نباید مستقیماً public شود.
+
+بدون دامنه، برنامه با قالب `http://SERVER_PUBLIC_IP:PUBLIC_HTTP_PORT` باز می‌شود. پس از تهیه دامنه فقط DNS و تنظیم Reverse Proxy تغییر می‌کنند و Docker یا کد برنامه نیاز به تغییر ندارند. Caddy، Let's Encrypt/Certbot یا راهکار ACME مشابه می‌تواند HTTPS را فراهم کند؛ فایل‌های certificate خصوصی را commit نکنید.
+
+به‌روزرسانی نسخهٔ مستقر:
+
+```bash
+git pull
+docker compose up -d --build
+```
+
+عیب‌یابی پایه:
+
+```bash
+docker compose ps
+docker compose logs
+docker inspect ai-data-analyst-app
+curl http://127.0.0.1:8601/_stcore/health
+curl http://SERVER_PUBLIC_IP:PUBLIC_HTTP_PORT/_stcore/health
+```

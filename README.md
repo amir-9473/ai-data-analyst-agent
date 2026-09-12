@@ -1,8 +1,12 @@
 # AI Data Analyst Agent
 
-[English](README.md) | [فارسی](README.fa.md)
+[English](README.md) | [فارسی](README.fa.md) | [Live demo](http://82.22.175.58:8080/)
 
 A compact multilingual agent that reads CSV, Excel, or JSON files, understands multi-part questions in Persian or English, runs statistical tools, and returns Markdown plus charts.
+
+## Live demo
+
+**[Open the AI Data Analyst](http://82.22.175.58:8080/)**
 
 ## What it can do
 
@@ -123,11 +127,7 @@ Internet
   -> Data Analyst Agent
 ```
 
-The current VPS deployment is available at:
-
-```text
-http://82.22.175.58:8080
-```
+The current VPS deployment is available at **[http://82.22.175.58:8080/](http://82.22.175.58:8080/)**.
 
 For another server, replace the IP address and choose an unused `PUBLIC_HTTP_PORT` in the private
 `.env` file. Streamlit remains private on `127.0.0.1:STREAMLIT_HOST_PORT`; do not publish its port
