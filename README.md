@@ -1,12 +1,12 @@
 # AI Data Analyst Agent
 
-[English](README.md) | [فارسی](README.fa.md) | [Live demo](http://82.22.175.58:8080/)
+[English](README.md) | [فارسی](README.fa.md) | [Live demo](https://82.22.175.58/data-analysis/)
 
 A compact multilingual agent that reads CSV, Excel, or JSON files, understands multi-part questions in Persian or English, runs statistical tools, and returns Markdown plus charts.
 
 ## Live demo
 
-**[Open the AI Data Analyst](http://82.22.175.58:8080/)**
+**[Open the AI Data Analyst](https://82.22.175.58/data-analysis/)**
 
 ## What it can do
 
