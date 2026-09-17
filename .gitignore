@@ -10,3 +10,5 @@ uploads/
 outputs/
 .DS_Store
 Thumbs.db
+backups/
+.streamlit/*.before-codex-*
