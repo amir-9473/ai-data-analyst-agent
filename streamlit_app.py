@@ -8,6 +8,8 @@ from app.agent.orchestrator import run_agent
 from app.loaders.pandas_loader import load_data
 from app.profiling.profiler import profile_dataset
 from app.ui import page_css, render_markdown
+from app.llm.personal_settings import render_personal_settings, completion_for_session
+from app.llm.service_errors import friendly_error
 
 
 st.set_page_config(page_title="AI Data Analyst", page_icon="📊", layout="wide")
@@ -15,16 +17,17 @@ st.markdown(page_css(), unsafe_allow_html=True)
 
 # Cloud secrets override local .env values when the app is deployed.
 try:
-    if key := st.secrets.get("OPENROUTER_API_KEY"):
-        os.environ["OPENROUTER_API_KEY"] = key
-    if model := st.secrets.get("LLM_MODEL"):
-        os.environ["LLM_MODEL"] = model
+    for name in ("OPENROUTER_API_KEY", "GROQ_API_KEY", "LLM_MODEL", "LLM_PROVIDER", "GROQ_MODEL", "OPENROUTER_MODEL"):
+        if value := st.secrets.get(name):
+            os.environ[name] = value
 except FileNotFoundError:
     pass
 
 st.markdown('<div class="app-eyebrow">MULTILINGUAL DATA WORKSPACE</div>', unsafe_allow_html=True)
 st.title("AI Data Analyst")
 st.caption("Upload a dataset, ask a multi-part question in Persian or English, and receive evidence-based analysis.")
+
+render_personal_settings(st)
 
 with st.container(border=True):
     st.subheader("1. Upload a dataset")
@@ -71,9 +74,10 @@ if "dataset" in st.session_state:
     if analyze:
         try:
             with st.spinner("Analyzing the dataset..."):
-                st.session_state.result = run_agent(frame, question)
+                st.session_state.result = None
+                st.session_state.result = run_agent(frame, question, completion=completion_for_session(st))
         except Exception as exc:
-            st.error(f"Analysis failed: {exc}")
+            st.error(friendly_error(exc, personal=st.session_state.get("personal_enabled", False)))
 
     if result := st.session_state.get("result"):
         with st.container(border=True):

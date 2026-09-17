@@ -96,6 +96,7 @@ def page_css() -> str:
         unicode-bidi: plaintext;
     }}
     .analysis-output {{
+        overflow-x: auto;
         background: var(--surface-muted);
         border: 1px solid var(--border);
         border-radius: 14px;
@@ -106,6 +107,10 @@ def page_css() -> str:
         unicode-bidi: plaintext;
         text-align: start;
     }}
+    [data-testid="stExpander"] {{background: var(--surface); border-color: var(--border);}}
+    [data-testid="stExpander"] p {{font-family: "Vazirmatn", Tahoma, sans-serif; unicode-bidi: plaintext;}}
+    [data-testid="stExpander"] input {{direction: ltr; text-align: left;}}
+    [data-testid="stAlert"] p {{font-family: "Vazirmatn", Tahoma, sans-serif; unicode-bidi: plaintext;}}
     .analysis-output [dir="auto"]:dir(rtl) {{
         direction: rtl;
         font-family: "Vazirmatn", Tahoma, sans-serif;

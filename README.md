@@ -19,7 +19,7 @@ A compact multilingual agent that reads CSV, Excel, or JSON files, understands m
 python -m venv .venv
 .venv\Scripts\pip install -r requirements.txt
 Copy-Item .env.example .env
-# Put your OpenRouter key in .env
+# Put your Groq key in .env (or select OpenRouter with LLM_PROVIDER)
 .venv\Scripts\streamlit run streamlit_app.py
 ```
 
@@ -34,8 +34,10 @@ The Streamlit app reads and analyzes files in one process, so the public demo ne
 3. Add these values under **Advanced settings > Secrets**:
 
 ```toml
+GROQ_API_KEY = "your-groq-key"
+LLM_PROVIDER = "groq"
+LLM_MODEL = "openai/gpt-oss-120b"
 OPENROUTER_API_KEY = "your-openrouter-key"
-LLM_MODEL = "qwen/qwen3-8b"
 ```
 
 4. Deploy and share the generated HTTPS URL. Never commit the real key.
@@ -83,7 +85,9 @@ cp .env.example .env
 chmod 600 .env
 ```
 
-`OPENROUTER_API_KEY` is required for AI-generated analyses. `LLM_MODEL` selects the OpenRouter model.
+Groq is the default provider, using `openai/gpt-oss-120b`, high reasoning effort, temperature 0.2, top_p 1, and a completion budget of 8192 tokens per round. `GROQ_API_KEY` enables this default. Set `LLM_PROVIDER=openrouter` to switch the server default, or select OpenRouter in the UI. `OPENROUTER_API_KEY` and `OPENROUTER_MODEL` keep its independent configuration. Optional controls: `LLM_REASONING_EFFORT`, `LLM_TEMPERATURE`, `LLM_MAX_TOKENS`, and `LLM_TIMEOUT` (180 seconds by default).
+
+The **API و مدل شخصی** panel accepts a user's Groq, OpenRouter, OpenAI, or DeepSeek key and model ID. The model must support function calling. Press **ثبت** to register or **حذف** to clear. Personal credentials stay in that Streamlit session and are never written to disk or shared with other sessions. Editing registered values requires registering them again. Provider failures use the same Persian messages as the laborlaw app, with separate messages for authentication, billing, quota, rate limits, capacity, timeout, unavailable models, and invalid responses.
 Deployment variables are `SITE_ADDRESS`, `PUBLIC_HTTP_PORT`, and `STREAMLIT_HOST_PORT`. Never commit
 the `.env` file, API keys, passwords, Streamlit secrets, certificates, or private keys.
 

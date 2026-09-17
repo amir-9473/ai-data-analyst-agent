@@ -20,7 +20,7 @@
 python -m venv .venv
 .venv\Scripts\pip install -r requirements.txt
 Copy-Item .env.example .env
-# کلید OpenRouter را در .env قرار دهید
+# کلید Groq را در .env قرار دهید؛ OpenRouter نیز قابل انتخاب است
 .venv\Scripts\streamlit run streamlit_app.py
 ```
 
@@ -40,8 +40,10 @@ http://127.0.0.1:8000/docs
 4. در بخش Secrets مقادیر زیر را وارد کنید:
 
 ```toml
-OPENROUTER_API_KEY = "کلید-جدید-شما"
-LLM_MODEL = "qwen/qwen3-8b"
+GROQ_API_KEY = "کلید-Groq-شما"
+LLM_PROVIDER = "groq"
+LLM_MODEL = "openai/gpt-oss-120b"
+OPENROUTER_API_KEY = "کلید-OpenRouter-شما"
 ```
 
 5. Deploy را بزنید و لینک HTTPS ساخته‌شده را به اشتراک بگذارید.
