@@ -14,7 +14,7 @@ def render_personal_settings(st):
         provider_changed()
         st.session_state["personal_enabled"] = False
 
-    with st.expander("API و مدل شخصی", expanded=False):
+    with st.container(key="llm_settings"), st.expander("API و مدل شخصی", expanded=False):
         st.caption("کلید شخصی فقط در همین نشست نگهداری می‌شود. مدل باید از فراخوانی ابزارها پشتیبانی کند.")
         enabled = st.checkbox("استفاده از API شخصی", key="personal_enabled")
         if enabled:

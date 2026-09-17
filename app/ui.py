@@ -110,6 +110,18 @@ def page_css() -> str:
     [data-testid="stExpander"] {{background: var(--surface); border-color: var(--border);}}
     [data-testid="stExpander"] p {{font-family: "Vazirmatn", Tahoma, sans-serif; unicode-bidi: plaintext;}}
     [data-testid="stExpander"] input {{direction: ltr; text-align: left;}}
+    .st-key-llm_settings {{direction: rtl; font-family: "Vazirmatn", Tahoma, sans-serif;}}
+    .st-key-llm_settings [data-testid="stExpander"] summary {{direction: rtl;}}
+    .st-key-llm_settings p, .st-key-llm_settings label {{
+        direction: rtl;
+        text-align: right;
+        unicode-bidi: normal;
+        font-family: "Vazirmatn", Tahoma, sans-serif !important;
+    }}
+    .st-key-llm_settings button, .st-key-llm_settings input,
+    .st-key-llm_settings [data-baseweb="select"] {{font-family: "Vazirmatn", Tahoma, sans-serif !important;}}
+    .st-key-llm_settings [data-baseweb="select"] {{direction: rtl; text-align: right;}}
+    .st-key-llm_settings input {{direction: ltr; text-align: right;}}
     [data-testid="stAlert"] p {{font-family: "Vazirmatn", Tahoma, sans-serif; unicode-bidi: plaintext;}}
     .analysis-output [dir="auto"]:dir(rtl) {{
         direction: rtl;
