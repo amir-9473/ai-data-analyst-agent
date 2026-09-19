@@ -1,7 +1,9 @@
 """Session-independent OpenAI-compatible transports for the analysis tool loop."""
 from dataclasses import dataclass, field
+import logging
 import os
 import re
+import time
 import requests
 from dotenv import load_dotenv
 from .service_errors import ExternalServiceError, check_response
@@ -15,6 +17,9 @@ PROVIDERS = {
 }
 OPENROUTER_URL = PROVIDERS["OpenRouter"]
 DEFAULT_MODELS = {"Groq": "openai/gpt-oss-120b", "OpenRouter": "openai/gpt-oss-120b"}
+LOGGER = logging.getLogger(__name__)
+MAX_RATE_LIMIT_RETRIES = 2
+MAX_RETRY_AFTER_SECONDS = 60
 
 
 @dataclass(frozen=True)
@@ -58,7 +63,8 @@ class LLMSettings:
             raise ExternalServiceError("Invalid environment settings.", kind="configuration", provider=selected) from None
 
 
-def chat_completion(messages: list[dict], tools: list[dict] | None = None, *, settings: LLMSettings | None = None) -> dict:
+def chat_completion(messages: list[dict], tools: list[dict] | None = None, *, settings: LLMSettings | None = None,
+                    response_format: dict | None = None) -> dict:
     settings = settings or LLMSettings.from_env()
     payload = {"model": settings.model, "messages": messages}
     if settings.provider == "OpenAI":
@@ -79,14 +85,40 @@ def chat_completion(messages: list[dict], tools: list[dict] | None = None, *, se
     if tools:
         payload.update(tools=tools, tool_choice="auto")
         if settings.provider in {"Groq", "OpenRouter"}:
-            payload["parallel_tool_calls"] = True
+            payload["parallel_tool_calls"] = not (
+                settings.provider == "Groq" and settings.model.startswith("openai/gpt-oss-")
+            )
+    if response_format:
+        payload["response_format"] = response_format
     try:
-        response = requests.post(PROVIDERS[settings.provider],
-                                 headers={"Authorization": f"Bearer {settings.api_key}", "Content-Type": "application/json"},
-                                 json=payload, timeout=settings.timeout, allow_redirects=False)
-        if 300 <= response.status_code < 400:
-            raise ExternalServiceError("Unexpected redirect.", kind="connection", provider=settings.provider)
-        check_response(response)
+        for attempt in range(MAX_RATE_LIMIT_RETRIES + 1):
+            response = requests.post(PROVIDERS[settings.provider],
+                                     headers={"Authorization": f"Bearer {settings.api_key}", "Content-Type": "application/json"},
+                                     json=payload, timeout=settings.timeout, allow_redirects=False)
+            if 300 <= response.status_code < 400:
+                raise ExternalServiceError("Unexpected redirect.", kind="connection", provider=settings.provider)
+            try:
+                check_response(response)
+            except ExternalServiceError as exc:
+                if exc.status == 429:
+                    LOGGER.warning(
+                        "LLM rate limit: provider=%s kind=%s retry_after=%s remaining_tpm=%s attempt=%s",
+                        settings.provider, exc.kind, exc.retry_after,
+                        response.headers.get("x-ratelimit-remaining-tokens", "unknown"), attempt + 1,
+                    )
+                elif exc.status == 400:
+                    try:
+                        error_type = response.json().get("error", {}).get("type", "unknown")
+                    except (ValueError, AttributeError, TypeError):
+                        error_type = "unknown"
+                    LOGGER.warning("LLM invalid request: provider=%s model=%s type=%s tools=%s",
+                                   settings.provider, settings.model, error_type, bool(tools))
+                if (exc.kind != "rate_limited" or exc.retry_after is None
+                        or exc.retry_after > MAX_RETRY_AFTER_SECONDS or attempt >= MAX_RATE_LIMIT_RETRIES):
+                    raise
+                time.sleep(max(1, exc.retry_after))
+                continue
+            break
         body = response.json()
         choice = body["choices"][0]
         message = choice["message"]

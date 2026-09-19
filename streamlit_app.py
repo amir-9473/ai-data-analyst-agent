@@ -8,7 +8,7 @@ from app.agent.orchestrator import run_agent
 from app.loaders.pandas_loader import load_data
 from app.profiling.profiler import profile_dataset
 from app.ui import page_css, render_markdown
-from app.llm.personal_settings import render_personal_settings, completion_for_session
+from app.llm.personal_settings import render_personal_settings, settings_for_session
 from app.llm.service_errors import friendly_error
 
 
@@ -75,7 +75,7 @@ if "dataset" in st.session_state:
         try:
             with st.spinner("Analyzing the dataset..."):
                 st.session_state.result = None
-                st.session_state.result = run_agent(frame, question, completion=completion_for_session(st))
+                st.session_state.result = run_agent(frame, question, settings=settings_for_session(st))
         except Exception as exc:
             st.error(friendly_error(exc, personal=st.session_state.get("personal_enabled", False)))
 

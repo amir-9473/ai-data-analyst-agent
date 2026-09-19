@@ -32,10 +32,25 @@ def test_groq_high_reasoning_and_portable_history(monkeypatch):
     assert payload["temperature"] == 0.2
     assert "frequency_penalty" not in payload and "presence_penalty" not in payload
     assert payload["include_reasoning"] is False
-    assert payload["parallel_tool_calls"] is True
+    assert payload["parallel_tool_calls"] is False
     assert post.call_args.kwargs["allow_redirects"] is False
     assert "reasoning" not in result["choices"][0]["message"]
     assert "private-key" not in repr(settings)
+
+
+def test_structured_plan_payload_has_no_tool_calls(monkeypatch):
+    post = Mock(return_value=response(body={"choices": [{"message": {"content": '{"overview":false,"analyses":[],"charts":[]}'}}]}))
+    monkeypatch.setattr("app.llm.client.requests.post", post)
+    settings = LLMSettings("Groq", "private-key", "openai/gpt-oss-20b", reasoning_effort="low")
+    output_format = {"type": "json_schema", "json_schema": {"name": "plan", "strict": True, "schema": {"type": "object"}}}
+
+    chat_completion([{"role": "user", "content": "Plan"}], settings=settings, response_format=output_format)
+
+    payload = post.call_args.kwargs["json"]
+    assert payload["model"] == "openai/gpt-oss-20b"
+    assert payload["reasoning_effort"] == "low"
+    assert payload["response_format"] == output_format
+    assert "tools" not in payload and "parallel_tool_calls" not in payload
 
 
 def test_openrouter_server_selection_keeps_its_model_and_key(monkeypatch):
@@ -66,6 +81,34 @@ def test_provider_errors_are_classified_without_leaking(monkeypatch, status, det
     if kind == "quota_exhausted":
         assert friendly_error(raised.value) == FREE_QUOTA_MESSAGE
         assert "حساب شخصی" in friendly_error(raised.value, personal=True)
+
+
+def test_minute_rate_limit_waits_and_retries(monkeypatch):
+    limited = response(429, {"error": {"message": "tokens per minute (TPM)", "code": 429}}, {"Retry-After": "2"})
+    post = Mock(side_effect=[limited, response()])
+    sleep = Mock()
+    monkeypatch.setattr("app.llm.client.requests.post", post)
+    monkeypatch.setattr("app.llm.client.time.sleep", sleep)
+
+    result = chat_completion([{"role": "user", "content": "Analyze"}], settings=LLMSettings("Groq", "key", "openai/gpt-oss-120b"))
+
+    assert result["choices"][0]["message"]["content"] == "نتیجه"
+    assert post.call_count == 2
+    sleep.assert_called_once_with(2)
+
+
+def test_daily_quota_does_not_retry(monkeypatch):
+    post = Mock(return_value=response(429, {"error": {"message": "daily quota", "code": 429}}, {"Retry-After": "30"}))
+    sleep = Mock()
+    monkeypatch.setattr("app.llm.client.requests.post", post)
+    monkeypatch.setattr("app.llm.client.time.sleep", sleep)
+
+    with pytest.raises(ExternalServiceError) as raised:
+        chat_completion([{"role": "user", "content": "Analyze"}], settings=LLMSettings("Groq", "key", "openai/gpt-oss-120b"))
+
+    assert raised.value.kind == "quota_exhausted"
+    post.assert_called_once()
+    sleep.assert_not_called()
 
 
 @pytest.mark.parametrize("body", [{"choices": []}, {"choices": [{"message": {"content": ""}}]},

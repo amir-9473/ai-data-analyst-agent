@@ -43,16 +43,20 @@ def render_personal_settings(st):
             default = "OpenRouter" if os.getenv("LLM_PROVIDER", "groq").lower() == "openrouter" else "Groq"
             providers = list(DEFAULT_MODELS)
             st.selectbox("سرویس پاسخ‌گویی", providers, index=providers.index(default), key="server_provider")
-            st.caption("Groq: GPT OSS 120B · استدلال بالا · سقف ۸۱۹۲ توکن")
+            st.caption("Groq: برنامه‌ریزی با GPT OSS 20B؛ پاسخ نهایی با GPT OSS 120B")
             if st.session_state.get("personal_saved"):
                 st.button("حذف تنظیمات شخصی", on_click=clear, use_container_width=True)
 
 
-def completion_for_session(st):
+def settings_for_session(st):
     if st.session_state.get("personal_enabled"):
         settings = st.session_state.get("personal_saved")
         if not settings:
             raise ExternalServiceError("Personal settings not registered.", kind="unregistered_settings")
     else:
         settings = LLMSettings.from_env(st.session_state.get("server_provider"))
-    return partial(chat_completion, settings=settings)
+    return settings
+
+
+def completion_for_session(st):
+    return partial(chat_completion, settings=settings_for_session(st))
