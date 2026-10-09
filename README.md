@@ -130,7 +130,7 @@ Internet
 The current VPS deployment is available at:
 
 ```text
-http://82.22.175.58:8080
+https://82.22.175.58/data-analysis
 ```
 
 For another server, replace the IP address and choose an unused `PUBLIC_HTTP_PORT` in the private
