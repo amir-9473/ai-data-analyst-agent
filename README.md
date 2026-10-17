@@ -1,6 +1,6 @@
 # AI Data Analyst Agent
 
-[English](README.md) | [فارسی](README.fa.md)
+[English](README.md) | [فارسی](README.fa.md) | [Live Demo](https://82.22.175.58/data-analysis/)
 
 A compact multilingual agent that reads CSV, Excel, or JSON files, understands multi-part questions in Persian or English, runs statistical tools, and returns Markdown plus charts.
 
